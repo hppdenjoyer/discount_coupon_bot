@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TOKEN=${TOKEN}
+      - TELEGRAM_PAYMENT_TOKEN=${TELEGRAM_PAYMENT_TOKEN}
+    restart: unless-stopped

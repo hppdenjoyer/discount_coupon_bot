@@ -1,0 +1,52 @@
+{
+    "burgers": [
+        {
+            "id": "burger1",
+            "name": "Классический бургер",
+            "price": 299.0,
+            "description": "Сочная говяжья котлета с листьями салата и томатами",
+            "category": "burgers"
+        },
+        {
+            "id": "burger2",
+            "name": "Чизбургер",
+            "price": 329.0,
+            "description": "Бургер с двойным сыром и специальным соусом",
+            "category": "burgers"
+        },
+        {
+            "id": "bfe3e528",
+            "name": "Сырный Бургер",
+            "price": 449.0,
+            "description": "Большой сырный бургер",
+            "category": "burgers"
+        }
+    ],
+    "starters": [
+        {
+            "id": "starter1",
+            "name": "Картофель фри",
+            "price": 149.0,
+            "description": "Хрустящий картофель с солью",
+            "category": "starters"
+        }
+    ],
+    "drinks": [
+        {
+            "id": "drink1",
+            "name": "Кола",
+            "price": 99.0,
+            "description": "Освежающий напиток 0.5л",
+            "category": "drinks"
+        }
+    ],
+    "desserts": [
+        {
+            "id": "dessert1",
+            "name": "Чизкейк",
+            "price": 199.0,
+            "description": "Нежный чизкейк с ягодным соусом",
+            "category": "desserts"
+        }
+    ]
+}
