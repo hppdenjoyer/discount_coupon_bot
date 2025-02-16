@@ -51,6 +51,7 @@ pip install -r requirements.txt
 ```env
 TOKEN=ваш_токен_бота  # Токен бота от @BotFather
 TELEGRAM_PAYMENT_TOKEN=ваш_платежный_токен  # Платежный токен от @BotFather
+ADMIN_IDS=ваш_телеграм_айди  # Ваш Telegram ID для получения уведомлений
 ```
 
 5. Запустите бота:
