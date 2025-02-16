@@ -29,9 +29,10 @@
 ### Шаги для установки:
 
 1. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/yourusername/fastfood-coupon-bot.git
-   cd fastfood-coupon-bot
+```bash
+git clone https://github.com/hppdenjoyer/discount_coupon_bot
+cd discount_coupon_bot
+```
 
 2. Создайте виртуальное окружение и активируйте его:
 ```bash
@@ -63,8 +64,8 @@ python main.py
 
 1. Клонируйте репозиторий:
 ```bash
-git clone [url-репозитория]
-cd [папка-проекта]
+git clone https://github.com/hppdenjoyer/discount_coupon_bot
+cd discount_coupon_bot
 ```
 
 2. Создайте файл `.env` с переменными окружения (как описано выше)
