@@ -1,11 +1,25 @@
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import ContextTypes
+from aiogram import Router, F, Dispatcher
+from aiogram.types import Message, CallbackQuery
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from config import INVITE_FRIEND, VIEW_PURCHASES, ADD_BALANCE
 from models.user import get_user_profile
 
-async def handle_profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle profile button press."""
-    user_id = update.effective_user.id
+router = Router()
+
+@router.message(F.text == "👤 Профиль")
+async def handle_profile(message: Message):
+    """Обработка нажатия кнопки профиля."""
+    await show_profile(message)
+
+@router.callback_query(F.data == "back_to_profile")
+async def back_to_profile(query: CallbackQuery):
+    """Обработка возврата в профиль."""
+    await query.answer()
+    await show_profile(query.message, edit=True)
+
+async def show_profile(message: Message, edit: bool = False):
+    """Показ профиля пользователя."""
+    user_id = message.chat.id if isinstance(message, Message) else message.chat.id
     profile = get_user_profile(user_id)
 
     profile_text = f"""
@@ -17,34 +31,38 @@ ID: {user_id}
 Приглашено друзей: {profile['invited_friends']}
     """
 
-    keyboard = [
-        [InlineKeyboardButton(text=INVITE_FRIEND, callback_data="profile_invite")],
-        [InlineKeyboardButton(text=VIEW_PURCHASES, callback_data="profile_purchases")],
-        [InlineKeyboardButton(text=ADD_BALANCE, callback_data="profile_balance")]
-    ]
+    builder = InlineKeyboardBuilder()
+    builder.button(text=INVITE_FRIEND, callback_data="profile_invite")
+    builder.button(text=VIEW_PURCHASES, callback_data="profile_purchases")
+    builder.button(text=ADD_BALANCE, callback_data="profile_balance")
+    builder.adjust(1)
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(profile_text, reply_markup=reply_markup)
+    if edit:
+        await message.edit_text(profile_text, reply_markup=builder.as_markup())
+    else:
+        await message.answer(profile_text, reply_markup=builder.as_markup())
 
-async def profile_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle profile-related callbacks."""
-    query = update.callback_query
+@router.callback_query(F.data.startswith("profile_"))
+async def profile_callback(query: CallbackQuery):
+    """Обработка callback-запросов профиля."""
     await query.answer()
-
     action = query.data.replace("profile_", "")
 
     if action == "invite":
-        invite_link = f"https://t.me/share/url?url=https://t.me/your_bot?start={update.effective_user.id}"
+        # Формирование реферальной ссылки
+        invite_link = f"https://t.me/share/url?url=https://t.me/your_bot?start={query.from_user.id}"
+        builder = InlineKeyboardBuilder()
+        builder.button(text="◀️ Назад", callback_data="back_to_profile")
+
         await query.message.edit_text(
             "🎁 Пригласите друзей и получите бонус!\n\n"
             f"Ваша реферальная ссылка: {invite_link}",
-            reply_markup=InlineKeyboardMarkup([[
-                InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_profile")
-            ]])
+            reply_markup=builder.as_markup()
         )
 
     elif action == "purchases":
-        purchases = get_user_profile(update.effective_user.id)['purchases']
+        # Отображение истории покупок
+        purchases = get_user_profile(query.from_user.id)['purchases']
         if not purchases:
             purchase_text = "У вас пока нет покупок."
         else:
@@ -52,20 +70,28 @@ async def profile_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             for purchase in purchases:
                 purchase_text += f"🏷 {purchase['name']} - {purchase['date']}\n"
 
+        builder = InlineKeyboardBuilder()
+        builder.button(text="◀️ Назад", callback_data="back_to_profile")
+
         await query.message.edit_text(
             purchase_text,
-            reply_markup=InlineKeyboardMarkup([[
-                InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_profile")
-            ]])
+            reply_markup=builder.as_markup()
         )
 
     elif action == "balance":
+        # Меню пополнения баланса
+        builder = InlineKeyboardBuilder()
+        builder.button(text="100 ₽", callback_data="payment_100")
+        builder.button(text="500 ₽", callback_data="payment_500")
+        builder.button(text="1000 ₽", callback_data="payment_1000")
+        builder.button(text="◀️ Назад", callback_data="back_to_profile")
+        builder.adjust(1)
+
         await query.message.edit_text(
             "💰 Выберите сумму пополнения:",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton(text="100 ₽", callback_data="payment_100")],
-                [InlineKeyboardButton(text="500 ₽", callback_data="payment_500")],
-                [InlineKeyboardButton(text="1000 ₽", callback_data="payment_1000")],
-                [InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_profile")]
-            ])
+            reply_markup=builder.as_markup()
         )
+
+def register_profile_handlers(dp: Dispatcher):
+    """Регистрация обработчиков профиля."""
+    dp.include_router(router)

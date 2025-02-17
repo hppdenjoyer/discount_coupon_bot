@@ -3,13 +3,13 @@ import json
 from pathlib import Path
 
 def get_user_profile(user_id: int) -> Dict[str, Any]:
-    """Get or create user profile."""
+    """Получение или создание профиля пользователя."""
     try:
         with open('data/users.json', 'r') as f:
             users = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         users = {}
-    
+
     if str(user_id) not in users:
         users[str(user_id)] = {
             "balance": 0,
@@ -17,22 +17,22 @@ def get_user_profile(user_id: int) -> Dict[str, Any]:
             "invited_friends": 0,
             "purchases": []
         }
-        # Create users.json if it doesn't exist
+        # Создание users.json, если файл не существует
         Path('data').mkdir(exist_ok=True)
         with open('data/users.json', 'w') as f:
             json.dump(users, f)
-    
+
     return users[str(user_id)]
 
-def update_user_profile(user_id: int, data: Dict[str, Any]) -> None:
-    """Update user profile."""
+def update_user_profile(user_id: int, profile: Dict[str, Any]) -> None:
+    """Обновление профиля пользователя."""
     try:
         with open('data/users.json', 'r') as f:
             users = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        users = {}
-    
-    users[str(user_id)] = data
-    
-    with open('data/users.json', 'w') as f:
-        json.dump(users, f)
+
+        users[str(user_id)] = profile
+
+        with open('data/users.json', 'w') as f:
+            json.dump(users, f)
+    except Exception as e:
+        raise ValueError(f"Ошибка при обновлении профиля: {str(e)}")

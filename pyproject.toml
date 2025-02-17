@@ -1,10 +1,9 @@
 [project]
-name = "repl-nix-workspace"
+name = "discount-coupon-bot"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.11"
+description = "Telegram bot for discount coupons"
+requires-python = ">=3.8"
 dependencies = [
-    "python-telegram-bot==20.7",
-    "telegram>=0.0.1",
-    "twilio>=9.4.5",
+    "aiogram>=3.2.0",
+    "python-dotenv>=1.0.0"
 ]

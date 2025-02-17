@@ -1,26 +1,34 @@
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ContextTypes
+from aiogram import Router, Dispatcher
+from aiogram.types import Message
+from aiogram.filters import Command
 from config import WELCOME_MESSAGE, CATALOG_BUTTON, PROFILE_BUTTON, RULES_BUTTON
 from utils.keyboard import get_main_keyboard
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Send welcome message and main keyboard on /start command."""
-    keyboard = get_main_keyboard()
-    await update.message.reply_text(
+router = Router()
+
+@router.message(Command("start"))
+async def start_command(message: Message):
+    """Отправка приветственного сообщения и основной клавиатуры при команде /start."""
+    await message.answer(
         WELCOME_MESSAGE,
-        reply_markup=keyboard
+        reply_markup=get_main_keyboard()
     )
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Send help message when /help command is issued."""
+@router.message(Command("help"))
+async def help_command(message: Message):
+    """Отправка справочного сообщения при команде /help."""
     help_text = """
     Доступные команды:
     /start - Начать работу с ботом
     /help - Показать это сообщение
-    
+
     Используйте кнопки меню для навигации:
     🛍 Каталог - Просмотр доступных купонов
     👤 Профиль - Управление профилем
     📜 Правила - Правила использования
     """
-    await update.message.reply_text(help_text)
+    await message.answer(help_text)
+
+def register_command_handlers(dp: Dispatcher):
+    """Регистрация обработчиков базовых команд."""
+    dp.include_router(router)

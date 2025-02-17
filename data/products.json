@@ -20,6 +20,13 @@
             "price": 449.0,
             "description": "Большой сырный бургер",
             "category": "burgers"
+        },
+        {
+            "id": "fd2866b6",
+            "name": "Бургер Сырный",
+            "price": 299.0,
+            "description": "Большой сырный бургер",
+            "category": "burgers"
         }
     ],
     "starters": [
